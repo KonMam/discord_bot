@@ -21,15 +21,15 @@ async def member_info(ctx, member: discord.Member):
 
 @bot.command(name='find')
 async def find_member(ctx, name: str):
-    match_list: list[str] = []
+    match_list: list[discord.Member] = []
 
     for guild in bot.guilds:
-        print(guild)
         for member in guild.members:
             if name in member.name:
                 match_list.append(member)
             else:
                 pass
+            
     if len(match_list) > 0:
         await ctx.send([(x + ', ') for x in match_list])
     else:
