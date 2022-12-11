@@ -3,6 +3,7 @@ import os
 from datetime import date
 import sqlite3
 from sqlite3 import Error
+from random import randint
 
 import discord
 import dotenv
@@ -37,10 +38,15 @@ def create_quote(conn, quote_params):
 
 def get_random_quote(conn):
     sql_get_quotes = """SELECT * FROM quotes"""
+
     c: sqlite3.Cursor = conn.cursor()
     c.execute(sql_get_quotes)
-    row = c.fetchall()[0]
-    return row
+
+    rows = c.fetchall()
+    table_size = len(rows)
+
+    random_quote = rows[randint(0, table_size - 1)]
+    return random_quote
 
 
 sql_create_quote_table = """
@@ -111,11 +117,11 @@ async def random_quote(ctx):
 
     if conn is not None:
         create_table(conn, sql_create_quote_table)
-        row = get_random_quote(conn)
+        random_quote = get_random_quote(conn)
         conn.close()
         print(f'Connection to Database closed {date.today()}.')
     
-    msg = f'{row[0]} -{row[1]}, {row[2]}'
+    msg = f'{random_quote[2]} -{random_quote[1]}, {random_quote[3]}'
     await ctx.send(msg)
 
 
