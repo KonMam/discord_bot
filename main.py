@@ -1,7 +1,9 @@
 
 import os
-import dotenv
+from datetime import date
+
 import discord
+import dotenv
 from discord.ext import commands
 
 dotenv.load_dotenv()
@@ -16,7 +18,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.command(name='info')
 async def member_info(ctx, member: discord.Member):
-    msg = f'{member} joined on {member.joined_at.date()} and has {len(member.roles)} role.'
+    msg = f'{member} joined on {member.joined_at.date()} and has {len(member.roles)} roles.'
     await ctx.send(msg)
 
 @bot.command(name='find')
@@ -43,6 +45,10 @@ async def find_member(ctx, name: str):
     else:
         await ctx.send('User not found.')
 
+@bot.command(name='quote')
+async def quote(ctx, member:discord.Member, quote):
+    msg = f'{quote} -{member}, {date.today().strftime("%d/%m/%Y")}'
+    ctx.send(msg)
 
 
 bot.run(token=TOKEN)
