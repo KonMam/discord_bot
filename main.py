@@ -13,12 +13,16 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-@bot.command(name='pic')
-async def pic(ctx):
-    await ctx.send("https://random.imagecdn.app/500/150")
+@bot.command(name='info')
+async def member_info(ctx, member: discord.Member):
+    msg = f'{member} joined on {member.joined_at} and has {len(member.roles)}'
+    await ctx.send(msg)
+
 
 @bot.command(name='hello')
 async def hello(ctx):
     await ctx.send('Hello World!')
+
+
 
 bot.run(token=TOKEN)
