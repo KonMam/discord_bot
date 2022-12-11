@@ -32,7 +32,7 @@ def create_quote(conn, quote_params):
     """
     c = conn.cursor()
     c.execute(sql_insert_quote, quote_params)
-    c.commit()
+    conn.commit()
     return c.lastrowid
 
 sql_create_quote_table = """
