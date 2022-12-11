@@ -14,7 +14,7 @@ def create_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database started.")
+        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database started.")
         return conn
     except Error as e:
         print(e)
@@ -120,7 +120,7 @@ async def random_quote(ctx):
         create_table(conn, sql_create_quote_table)
         random_quote = get_random_quote(conn)
         conn.close()
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
+        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
     
     msg = f'{random_quote[2]} -{random_quote[1]}, {random_quote[3]}'
     await ctx.send(msg)
