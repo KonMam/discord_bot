@@ -12,7 +12,7 @@ def create_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
-        print("Succesfully connected to database.")
+        print(f"Connection to Database started {date.today()}.")
         return conn
     except Error as e:
         print(e)
@@ -34,6 +34,14 @@ def create_quote(conn, quote_params):
     c.execute(sql_insert_quote, quote_params)
     conn.commit()
     return c.lastrowid
+
+def get_random_quote(conn):
+    sql_get_quotes = """SELECT * FROM quotes"""
+    c: sqlite3.Cursor = conn.cursor()
+    c.execute(sql_get_quotes)
+    row = c.fetchall()[0]
+    return row
+
 
 sql_create_quote_table = """
     CREATE TABLE IF NOT EXISTS quotes (
@@ -85,15 +93,31 @@ async def find_member(ctx, name: str):
 @bot.command(name='quote')
 async def quote(ctx, member:discord.Member, quote):
     conn = create_connection("app.db")
+
     quote_params = (member.name, quote, date.today().strftime("%d/%m/%Y"))
 
     if conn is not None:
         create_table(conn, sql_create_quote_table)
         create_quote(conn, quote_params)
         conn.close()
+        print(f'Connection to Database closed {date.today()}.')
 
     msg = f'{quote} -{member}, {date.today().strftime("%d/%m/%Y")}'
     await ctx.send(msg)
+
+@bot.command(name='random_quote')
+async def random_quote(ctx):
+    conn = create_connection("app.db")
+
+    if conn is not None:
+        create_table(conn, sql_create_quote_table)
+        row = get_random_quote(conn)
+        conn.close()
+        print(f'Connection to Database closed {date.today()}.')
+    
+    msg = f'{row.quote} -{row.name}, {row.date}'
+    await ctx.send(msg)
+
 
 
 bot.run(token=TOKEN)
