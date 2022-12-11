@@ -2,6 +2,7 @@
 import os
 from datetime import date
 import sqlite3
+from sqlite3 import Error
 
 import discord
 import dotenv
@@ -10,37 +11,37 @@ from discord.ext import commands
 def create_connection(db_file):
     conn = None
     try:
-	conn = sqlite3.connect(db_file)
-	return conn
+        conn = sqlite3.connect(db_file)
+        return conn
     except Error as e:
-	print(e)
-    return conn
+        print(e)
+        return conn
 
-def create_table(conn, crate_table_sql):
+def create_table(conn, create_table_sql):
     try:
-	c = conn.cursor()
-	c.execute(create_table_sql)
+        c = conn.cursor()
+        c.execute(create_table_sql)
     except Error as e:
-	print(e)
+	    print(e)
 
 def create_quote(conn, quote_params):
+    sql_insert_quote = """
+        INSERT INTO quotes(id, name, quote, date)
+        VALUES(?, ?, ?, ?)
+    """
     c = conn.cursor()
-    c.execute(sql, quote_params)
+    c.execute(sql_insert_quote, quote_params)
     c.commit()
     return c.lastrowid
 
-sql_create_quote_table = """CREATE TABLE IF NOT EXISTS quotes (
-				id integer PRIMARY KEY,
-				name text NOT NULL,
-				quote text NOT NULL,
-				date text NOT NULL
-			 )"""
+sql_create_quote_table = """
+    CREATE TABLE IF NOT EXISTS quotes (
+        id integer PRIMARY KEY,
+        name text NOT NULL,
+        quote text NOT NULL,
+        date text NOT NULL)
+    """
 
-sql_insert_quote = """
-INSERT INTO 
-    quotes(id, name, quote, date)
-VALUES(?, ?, ?, ?)
-"""
 
 dotenv.load_dotenv()
 
@@ -85,10 +86,12 @@ async def find_member(ctx, name: str):
 async def quote(ctx, member:discord.Member, quote):
     conn = create_connection("app.db")
     quote_params = (0, member, quote, date.today().strftime("%d/%m/%Y"))
+    
     if conn is not None:
-	create_table(conn, sql_create_quote_table)
-	create_quote(conn, quote_params)
-    conn.close()
+        create_table(conn, sql_create_quote_table)
+        create_quote(conn, quote_params)
+        conn.close()
+
     msg = f'{quote} -{member}, {date.today().strftime("%d/%m/%Y")}'
     await ctx.send(msg)
 
