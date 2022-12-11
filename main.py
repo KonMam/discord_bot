@@ -29,9 +29,9 @@ async def find_member(ctx, name: str):
                 match_list.append(member)
             else:
                 pass
-            
+
     if len(match_list) > 0:
-        await ctx.send([(x + ', ') for x in match_list])
+        await ctx.send([(x.name + ', ') for x in match_list])
     else:
         await ctx.send('User not found.')
 
