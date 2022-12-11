@@ -15,13 +15,23 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.command(name='info')
 async def member_info(ctx, member: discord.Member):
-    msg = f'{member} joined on {member.joined_at} and has {len(member.roles)}'
+    msg = f'{member} joined on {member.joined_at.date} and has {len(member.roles)} role.'
     await ctx.send(msg)
 
+@bot.command(name='find')
+async def find_member(ctx, name: str):
+    match_list: list[str] = []
 
-@bot.command(name='hello')
-async def hello(ctx):
-    await ctx.send('Hello World!')
+    for guild in bot.guilds:
+        for member in guild.members:
+            if name in member.name:
+                match_list.append(member)
+            else:
+                pass
+    if len(match_list) > 0:
+        await ctx.send([(x + ', ') for x in match_list])
+    else:
+        await ctx.send('User not found.')
 
 
 
