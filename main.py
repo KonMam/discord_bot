@@ -115,7 +115,7 @@ async def random_quote(ctx):
         conn.close()
         print(f'Connection to Database closed {date.today()}.')
     
-    msg = f'{row.quote} -{row.name}, {row.date}'
+    msg = f'{row[0]} -{row[1]}, {row[2]}'
     await ctx.send(msg)
 
 
