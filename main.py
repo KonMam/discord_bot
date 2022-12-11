@@ -47,7 +47,7 @@ async def find_member(ctx, name: str):
 
 @bot.command(name='quote')
 async def quote(ctx, member:discord.Member, quote):
-    msg = f'{quote} -{member}, {date.today().strftime("%d/%m/%Y")}'
+    msg = f'"{quote}" - {member}, {date.today().strftime("%d/%m/%Y")}'
     await ctx.send(msg)
 
 
