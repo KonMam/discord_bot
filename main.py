@@ -109,7 +109,7 @@ async def quote(ctx, member:discord.Member, quote):
         conn.close()
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
 
-    msg = f'**"{quote}"** *    {member}, {date.today().strftime("%d/%m/%Y")}*'
+    msg = f'**"{quote}"**    - *{member}, {date.today().strftime("%d/%m/%Y")}*'
     await ctx.send(msg)
 
 @bot.command(name='random_quote')
@@ -122,7 +122,7 @@ async def random_quote(ctx):
         conn.close()
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
     
-    msg = f'**"{random_quote[2]}"** *    {random_quote[1]}, {random_quote[3]}*'
+    msg = f'**"{random_quote[2]}"**    - *{random_quote[1]}, {random_quote[3]}*'
     await ctx.send(msg)
 
 
