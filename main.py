@@ -12,6 +12,7 @@ def create_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
+        print("Succesfully connected to database.")
         return conn
     except Error as e:
         print(e)
@@ -26,8 +27,8 @@ def create_table(conn, create_table_sql):
 
 def create_quote(conn, quote_params):
     sql_insert_quote = """
-        INSERT INTO quotes(id, name, quote, date)
-        VALUES(?, ?, ?, ?)
+        INSERT INTO quotes(name, quote, date)
+        VALUES(?, ?, ?)
     """
     c = conn.cursor()
     c.execute(sql_insert_quote, quote_params)
@@ -36,7 +37,6 @@ def create_quote(conn, quote_params):
 
 sql_create_quote_table = """
     CREATE TABLE IF NOT EXISTS quotes (
-        id integer PRIMARY KEY,
         name text NOT NULL,
         quote text NOT NULL,
         date text NOT NULL)
@@ -85,8 +85,8 @@ async def find_member(ctx, name: str):
 @bot.command(name='quote')
 async def quote(ctx, member:discord.Member, quote):
     conn = create_connection("app.db")
-    quote_params = (0, member, quote, date.today().strftime("%d/%m/%Y"))
-    
+    quote_params = (member.name, quote, date.today().strftime("%d/%m/%Y"))
+
     if conn is not None:
         create_table(conn, sql_create_quote_table)
         create_quote(conn, quote_params)
