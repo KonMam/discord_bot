@@ -2,8 +2,9 @@ import sqlite3
 from datetime import datetime as dt
 from random import randint
 from sqlite3 import Error
+from typing import Union
 
-def _create_connection(db_file: str) -> sqlite3.Connection | None:
+def _create_connection(db_file: str) -> Union[sqlite3.Connection,None]:
     conn = None
     try:
         conn = sqlite3.connect(db_file)
@@ -17,7 +18,7 @@ def _get_query_results(c: sqlite3.Cursor) -> list[sqlite3.Row]:
     rows: list[sqlite3.Row] = c.fetchall()
     return rows
 
-def execute_query(sql_query: str, quote_params: tuple = (), results: bool = False) -> list[sqlite3.Row] | None:
+def execute_query(sql_query: str, quote_params: tuple = (), results: bool = False) -> Union[list[sqlite3.Row],None]:
     conn = _create_connection("app.db")
 
     rows = None
@@ -38,7 +39,7 @@ def execute_query(sql_query: str, quote_params: tuple = (), results: bool = Fals
     conn.close()
     print(f"{dt.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
 
-def get_random_result(rows: list[sqlite3.Row] | None):
+def get_random_result(rows: Union[list[sqlite3.Row],None]):
     if rows != None:
         table_size = len(rows)
         random_quote = rows[randint(0, table_size - 1)]
