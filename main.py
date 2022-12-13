@@ -52,7 +52,6 @@ async def quote(ctx, member:discord.Member, quote):
 
     quote_params = (member.name, quote, date.today().strftime("%d/%m/%Y"))
 
-    execute_query(sql_query=sql_create_quote_table)
     execute_query(sql_query=sql_insert_quote, query_params=quote_params)
 
     msg = f'**"{quote}"**    - *{member}, {date.today().strftime("%d/%m/%Y")}*'
@@ -68,5 +67,10 @@ async def random_quote(ctx):
     await ctx.send(msg)
 
 
+def main():
+    # Checks if quote table exists, if not creates one
+    execute_query(sql_query=sql_create_quote_table)
+    # Starts the bot
+    bot.run(token=TOKEN)
 
-bot.run(token=TOKEN)
+main()
