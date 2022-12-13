@@ -1,62 +1,12 @@
-
-import datetime
-import os
 from datetime import date
-import sqlite3
-from sqlite3 import Error
-from random import randint
+import os
 
 import discord
 import dotenv
 from discord.ext import commands
 
-def create_connection(db_file):
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database started.")
-        return conn
-    except Error as e:
-        print(e)
-        return conn
-
-def create_table(conn, create_table_sql):
-    try:
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Error as e:
-	    print(e)
-
-def create_quote(conn, quote_params):
-    sql_insert_quote = """
-        INSERT INTO quotes(name, quote, date)
-        VALUES(?, ?, ?)
-    """
-    c = conn.cursor()
-    c.execute(sql_insert_quote, quote_params)
-    conn.commit()
-    return c.lastrowid
-
-def get_random_quote(conn):
-    sql_get_quotes = """SELECT * FROM quotes"""
-
-    c: sqlite3.Cursor = conn.cursor()
-    c.execute(sql_get_quotes)
-
-    rows = c.fetchall()
-    table_size = len(rows)
-
-    random_quote = rows[randint(0, table_size - 1)]
-    return random_quote
-
-
-sql_create_quote_table = """
-    CREATE TABLE IF NOT EXISTS quotes (
-        name text NOT NULL,
-        quote text NOT NULL,
-        date text NOT NULL)
-    """
-
+from utils.db import execute_query, get_random_result
+from sql.quote_scripts import sql_create_quote_table, sql_insert_quote, sql_get_all_quotes
 
 dotenv.load_dotenv()
 
@@ -99,28 +49,20 @@ async def find_member(ctx, name: str):
 
 @bot.command(name='quote')
 async def quote(ctx, member:discord.Member, quote):
-    conn = create_connection("app.db")
 
     quote_params = (member.name, quote, date.today().strftime("%d/%m/%Y"))
 
-    if conn is not None:
-        create_table(conn, sql_create_quote_table)
-        create_quote(conn, quote_params)
-        conn.close()
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
+    execute_query(sql_query=sql_create_quote_table)
+    execute_query(sql_query=sql_insert_quote, query_params=quote_params)
 
     msg = f'**"{quote}"**    - *{member}, {date.today().strftime("%d/%m/%Y")}*'
     await ctx.send(msg)
 
 @bot.command(name='random_quote')
 async def random_quote(ctx):
-    conn = create_connection("app.db")
 
-    if conn is not None:
-        create_table(conn, sql_create_quote_table)
-        random_quote = get_random_quote(conn)
-        conn.close()
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
+    rows = execute_query(sql_query=sql_get_all_quotes, results=True)
+    random_quote = get_random_result(rows=rows)
     
     msg = f'**"{random_quote[2]}"**    - *{random_quote[1]}, {random_quote[3]}*'
     await ctx.send(msg)
