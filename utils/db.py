@@ -18,6 +18,10 @@ def _get_query_results(c: sqlite3.Cursor) -> list[sqlite3.Row]:
     rows: list[sqlite3.Row] = c.fetchall()
     return rows
 
+def _close_connection(conn: sqlite3.Connection):
+    conn.close()
+    print(f"{dt.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
+
 def execute_query(sql_query: str, quote_params: tuple = (), results: bool = False) -> Union[list[sqlite3.Row],None]:
     conn = _create_connection("app.db")
 
@@ -34,10 +38,10 @@ def execute_query(sql_query: str, quote_params: tuple = (), results: bool = Fals
 
     if results:
         rows = _get_query_results(c=c)
+        _close_connection(conn=conn)
         return rows
 
-    conn.close()
-    print(f"{dt.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
+    _close_connection(conn=conn)
 
 def get_random_result(rows: Union[list[sqlite3.Row],None]):
     if rows != None:
