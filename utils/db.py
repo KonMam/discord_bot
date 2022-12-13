@@ -36,6 +36,8 @@ def execute_query(sql_query: str, query_params: tuple = (), results: bool = Fals
     else:
         c.execute(sql_query, query_params)
 
+    conn.commit()
+    
     if results:
         rows = _get_query_results(c=c)
         _close_connection(conn=conn)
