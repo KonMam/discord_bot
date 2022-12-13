@@ -22,7 +22,7 @@ def _close_connection(conn: sqlite3.Connection):
     conn.close()
     print(f"{dt.now().strftime('%Y-%m-%d %H:%M:%S')} INFO     Connection to Database closed.")
 
-def execute_query(sql_query: str, quote_params: tuple = (), results: bool = False) -> Union[list[sqlite3.Row],None]:
+def execute_query(sql_query: str, query_params: tuple = (), results: bool = False) -> Union[list[sqlite3.Row],None]:
     conn = _create_connection("app.db")
 
     rows = None
@@ -34,7 +34,7 @@ def execute_query(sql_query: str, quote_params: tuple = (), results: bool = Fals
     if tuple == ():
         c.execute(sql_query)
     else:
-        c.execute(sql_query, quote_params)
+        c.execute(sql_query, query_params)
 
     if results:
         rows = _get_query_results(c=c)
